@@ -10,6 +10,10 @@ aur jaise hme koi bhi change kiya backend mei to phir usko wapas se reload krna 
     -- npm i -D nodemon (to install it as dev dependency) 
     -- we also have to add "dev": "nodemon src/index.js" to the pacakage.json 
 dev dependencies -- ye sb sirf development mei rheti hai production mei ye nhi jaati to inka production mei koi itna effect nhi hota 
+abb kuch folders dekhne padenge  -- controllers db middleware models routes utils (utils will have the repeated functionalities)
+
+it is also suggested to install prettier -- as diff people write code in diff style so to keep the consistency -- npm i prettier 
+also we have to add some files with the prettier - .prettierrc (check it) and .prettierignore (kisme nhi lgana .env waale mei aur vscode files mei node_modules)
 
 
 
