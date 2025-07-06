@@ -1,0 +1,19 @@
+first hmne git init krke repo banai usse pacakage.json bna them isko git pe add kiya repo mei push kiya 
+phir baaki ki files banai - .gitignore (iske liye kaafi saare generators ate hai online just usme daalo node aur uske liye file ka content generate krke de dega)
+phir ek src uske andr -- index.js app.js constants.js
+.env aur .env.sample
+aur ek public folder -> temp folder -> .gitkeep 
+
+bs ye abhi structure hua hmra 
+ab package.json mei add kro "type" : "module" isse hm import use krr payenge 
+aur jaise hme koi bhi change kiya backend mei to phir usko wapas se reload krna hota hai to uske liye bhi kuch krna hoga -- we install nodemon for this what it does ? -- it will reload your project once you did any change
+    -- npm i -D nodemon (to install it as dev dependency) 
+    -- we also have to add "dev": "nodemon src/index.js" to the pacakage.json 
+dev dependencies -- ye sb sirf development mei rheti hai production mei ye nhi jaati to inka production mei koi itna effect nhi hota 
+
+
+
+
+
+
+
