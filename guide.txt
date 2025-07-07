@@ -15,8 +15,20 @@ abb kuch folders dekhne padenge  -- controllers db middleware models routes util
 it is also suggested to install prettier -- as diff people write code in diff style so to keep the consistency -- npm i prettier 
 also we have to add some files with the prettier - .prettierrc (check it) and .prettierignore (kisme nhi lgana .env waale mei aur vscode files mei node_modules)
 
+------------------- lecture 8 ---------------------------
+we create a account on mongoDB started a free database cluster, added our username and password in the quickstart section and also add the ip 0.0.0.0/0 which allows all the urls to access -- production mei ip bs ek machine ka add kiya jaata hai jha backend/server ho bs whi and we never allow access from anywhere -- we can also do this afterward via database access for username and pass, network access for ip address 
+then wo go to database and choose connect so we get a string that will connect the db just we have to replace the password and add that uri to .env file 
+there are two ways of database connection -- one - we can add the whole code to connect in hte index itself and then run it there or we can create a seprate file and then import it and then run it
+now we need three pacakages -- dotenv, mongoose, express
 
+mongoose se database connect hoga aur kuch imp points - 
+    jb bhi database se baat krnge to error aa skti hai means usse try and catch mei wrap kro 
+    database is always in another continent -- time lgta hai -- async await lgana hi padega good practice 
+    -- ultimately try catch and async await lgana chahiye whenever we talk to database 
+the connection is done in index.js file check it out 
+the connections two method will be one in index.js and other one is in the db folder 
 
+--------------------------------lecture 9------------------------------
 
 
 
