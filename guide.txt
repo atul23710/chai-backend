@@ -29,7 +29,98 @@ the connection is done in index.js file check it out
 the connections two method will be one in index.js and other one is in the db folder 
 
 --------------------------------lecture 9------------------------------
+first we add the then and catch statement with the connect_DB 
+* we use the app.use() with the middlewares 
+now we are going to study about the request and response in the express app
+we install cookie-parser and CORS in the project 
+in request we majorly study about the -- req.body, req.params, req.cookies
 
+we will first use the cors and configure it in the app.js 
+CONFIGURE OPTIONS FOR THE CORS - 
+        origin: Configures the Access-Control-Allow-Origin CORS header. Possible values:
+            Boolean - set origin to true to reflect the request origin, as defined by req.header('Origin'), or set it to false to disable CORS.
+            String - set origin to a specific origin. For example if you set it to "http://example.com" only requests from "http://example.com" will be allowed.
+            RegExp - set origin to a regular expression pattern which will be used to test the request origin. If it's a match, the request origin will be reflected. For example the pattern /example\.com$/ will reflect any request that is coming from an origin ending with "example.com".
+            Array - set origin to an array of valid origins. Each origin can be a String or a RegExp. For example ["http://example1.com", /\.example2\.com$/] will accept any request from "http://example1.com" or from a subdomain of "example2.com".
+            Function - set origin to a function implementing some custom logic. The function takes the request origin as the first parameter and a callback (which expects the signature err [object], allow [bool]) as the second.
+        methods: Configures the Access-Control-Allow-Methods CORS header. Expects a comma-delimited string (ex: 'GET,PUT,POST') or an array (ex: ['GET', 'PUT', 'POST']).
+        allowedHeaders: Configures the Access-Control-Allow-Headers CORS header. Expects a comma-delimited string (ex: 'Content-Type,Authorization') or an array (ex: ['Content-Type', 'Authorization']). If not specified, defaults to reflecting the headers specified in the request's Access-Control-Request-Headers header.
+        exposedHeaders: Configures the Access-Control-Expose-Headers CORS header. Expects a comma-delimited string (ex: 'Content-Range,X-Content-Range') or an array (ex: ['Content-Range', 'X-Content-Range']). If not specified, no custom headers are exposed.
+        credentials: Configures the Access-Control-Allow-Credentials CORS header. Set to true to pass the header, otherwise it is omitted.
+        maxAge: Configures the Access-Control-Max-Age CORS header. Set to an integer to pass the header, otherwise it is omitted.
+        preflightContinue: Pass the CORS preflight response to the next handler.
+        optionsSuccessStatus: Provides a status code to use for successful OPTIONS requests, since some legacy browsers (IE11, various SmartTVs) choke on 204
 
+The default configuration (just cors()) is the equivalent of:
+    {
+    "origin": "*",
+    "methods": "GET,HEAD,PUT,PATCH,POST,DELETE",
+    "preflightContinue": false,
+    "optionsSuccessStatus": 204
+    }
 
+this is a example of multiple origin hadled by a function but we can also have some regular expression here using its syntax and we can define more generalized version of origins
+    var whitelist = ['http://example1.com', 'http://example2.com']
+    var corsOptions = {
+    origin: function (origin, callback) {
+        if (whitelist.indexOf(origin) !== -1) {
+        callback(null, true)
+        } else {
+        callback(new Error('Not allowed by CORS'))
+        }
+    }
+    }
 
+i am unable to understand the preflight in the cors try to understand it some other times 
+//app.use() is a method used to mount middleware functions
+//Middleware functions have access to the request and response objects and can execute code before, during, or after a route handler.
+app mei configure kiya ki kasie kasie data ko lena hai aur cookieparse ko configure kiya 
+
+next middleware ke baare mei thoda si charcha -- 
+    we hit the route/url with the app.get - /instagram  so now we tell ki is url pe ayy to kya karo with that (req,res) => {inside we tell ki kya karna like res.json / res.send}
+    now this is simple ki mere paas ek request ayyi aur maine handle krke bhejdiya but if i want to add some checks in between like ki jo user hai wo login hai ki nhi or admin hai ki nhi to wo check krne ke liye we use middlewares 
+    /instagram -- middleware1 -- middleware2 -- etc -- (err, req, res, next)=>{}
+    this is the sequence we write it in sequence and it also checks it in sequence(wo syntax aage dekhnge), also to handle yha pe 4 fields hote hai err is ki koi err hua to, req is the request, res jo send krnge, next flag is basically for middleware ki hmne check krliya now next pe jao aur end mei jb wo funtion pe ata hai to res hi send ho jaata hai to next flag discard ho jaata hai 
+
+now hmme database se to bht baat krni padegi and hr baar try catch bhi use krna hoga aur async await bhi to hr baar pura likhne se accha hai ki ek utility hi bana lu mai iski -- asyncHandler -- ye bhi two methods hai banane ke first is using try catch second promise se
+but also hmme error bhi hrr bhi handle krna hai and for consistency hm chahenge ki hmra error hrr baar same dikhe taaki -- same dikhe se mtlb hai ki structure same ho -- status bheja, success, message and all kis format mei wo defined ho uske liye do to -- nodejs api error (google) -- for this we make ApiError.js in util and we extend the error class there and define it
+same thing we do with response -- ApiResponse.js -- but response is in core express so we can't have that class and we extending it 
+we have use statusCode inside them which is - 
+    HTTP response status codes indicate whether a specific HTTP request has been successfully completed. Responses are grouped in five classes:
+    Informational responses (100 – 199)
+    Successful responses (200 – 299)
+    Redirection messages (300 – 399)
+    Client error responses (400 – 499)
+    Server error responses (500 – 599)
+
+    ie we can conclude that statusCode < 400 is a response and above that is error 
+
+------------------------- lecture 10 --------------------------------
+User and video model with hooks and JWT
+-- model of our project is given on the github of the chai-aur-backend series github repo -- https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj
+so using that as refrence we are going to create the models
+
+we make the user and video model 
+now we are going to use mongoose-aggregate-paginate-v2 to add aggregate pipeline 
+//install it then to use it -- what it do we'll see 
+syntax - 
+    var mongoose = require("mongoose");
+    var aggregatePaginate = require("mongoose-aggregate-paginate-v2");
+
+    var mySchema = new mongoose.Schema({
+    /* your schema definition */
+    });
+
+    mySchema.plugin(aggregatePaginate);
+
+    var myModel = mongoose.model("SampleModel", mySchema);
+
+now we are going to use "bcrypt" in our project, install it as well -- it helps to hash our password ki password add to kre but wo show na ho 
+and also we use jsonwebtoken / jwt it helps us to create tokens -- it will encrypt the data -- go to jwt.io to read the token how it works -- it works like it have some headers, then payload (where our main data is), and then secret base(it make the token unique )
+
+we used a middleware use to encrypt the password everytime it is updated in the user model check it out 
+and then we also added some methods to the schema --to check if password is correct, then we added the secret and expiry of refersh token and access token in .env file
+
+now we create some more method to generate these access and refresh token (both of them are jwt token), jwt.sign allow us to generate token 
+so we totally till now created three methods in user 
+and added aggregation pipeline in video 
