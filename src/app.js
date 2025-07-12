@@ -9,7 +9,7 @@ const app = express()
     //   res.json({ msg: "This is CORS-enabled for a Single Route" });
     // });
     
-    
+
 //to configure the cors with the options we can also do it like define the options object and then pass it to the cors() we can do similar with the above as well -- i have defined the configuration options in the guide file for the lecture 9 
 app.use(cors({
     origin: process.env.CORS_ORIGIN, //konse konse origin allowed hai
@@ -40,6 +40,13 @@ app.use(express.static("public"))
 
 //cookieparse is for server se user ka jo browser hai uski cookies accept kr pau aur uski cookies set bhi kr pau -- secure cookies ko user ke browser mei rhkh skte hai unko server hi read kr skta hai and server hi set kr skta hai -- iske options ki jyada jrurat nhi pdti hai to abhi need nhi hai 
 app.use(cookieParser())
+
+//import routes 
+import userRouter from "./routes/user.routes.js"
+
+//routes declaration - phale we were using app.get and it worked coz hmne route bhi yhi likhe aur controller bhi yhi but now both of them are diff so we have to use middleware -- app.use("yha pe route do", konse router activate krwana hai) -- isse ab aage https://localhost:8000/users wala ayega and then wo userRouter pe chala jayega -- wha pr jo route add krnge wo iske ayega users/new_route 
+//good practice is ki aap api define kr rhe hai to batana chahiye ki api define kiya and uska vesion konsa hai - so we add api and v1 version in other version we might change somethings 
+app.use("/api/v1/users", userRouter);
 
 export {app}
 

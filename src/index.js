@@ -3,11 +3,10 @@
 // require('dotenv').config({path : './env'}) -- but this make the code inconsistent so we use -- also have to add "-r dotenv/config --experimental-json-modules src/index.js"
 import dotenv from "dotenv"
 dotenv.config({
-  path: "./env",
+  path: "./.env",
 });
 
 import mongoose from "mongoose"
-
 import { DB_NAME } from "./constants.js";
 import express from "express";
 import connect_DB from "./db/index.js";

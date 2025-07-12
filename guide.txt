@@ -124,3 +124,53 @@ and then we also added some methods to the schema --to check if password is corr
 now we create some more method to generate these access and refresh token (both of them are jwt token), jwt.sign allow us to generate token 
 so we totally till now created three methods in user 
 and added aggregation pipeline in video 
+
+-------------------------lecture 11--------------------------------
+how to upload file in backend , today file handling is not done much on our own server we use third party service for that 
+better practice is -- we create the utility for this handligng thrgh which we can handle images, files whatever we want, and this is very reuseable code, and wherever we want we can use it as a middleware
+
+what we are going to use : cloudinary, express fileupload or multer(in this we use multer), 
+our strategy is - hm user se file ko lenge using multer and apne local server pe rhkhnge temporarly and then usko cloudinary pe upload krnge from local server -- ye kiya kyu jaata hai taaki hmre server pe file aagyi hai to hm usse reattempt kr paay taaki reupload ka chance rhe 
+so hmne utility mei ek cloudinary naam se file banai - jao uske andr 
+
+now we are going to make a middleware with the use of multer -- to use multer also read its docs -- file storage it in disk storage 
+
+----------------------------lecture 12--------------------------------
+http crash course -- hyper text transfer protocol (whi hai ki text ko kaise transfer krre)
+https -- diff between http and https is -- in http if we send data as 123 then it will be recieved as 123 but in https it adds some layer of encryption to the data and the data is not decodeable in b/w 
+URL - uniform resource locator 
+URI - uniform resource identifier
+URN - uniform resource name 
+
+inside notes 
+----------------------------lecture 13-----------------------------------
+abb controllers likhna shuru krnge from now on logic hi logic --
+first hmne userregistration ke liye kiya hai to 
+we created a user.controller.js and user.routes.js to handle the userregistration now we want to import all that so we do import all that at app.js as we want our index.js file to be clean 
+we did importing and declaration of routes in app.js-- after this we write code for the user.routes.js ki kya karna hai now after this we will try to run our app and debug things 
+
+-----------------------------lecture 14---------------------------------
+logic building - register controller 
+now for registering user we have to do first build the logic and what we are going to do so first do that
+registering user - 
+    * get user details from frontend (although hmre project mei front end nhi hai but we will use postman for that)
+    * validation - simplest - not empty and other validations on input 
+    * check if user alreaady exists or not - via email, username (which on is unique can use that)
+    * check for images, check for avatar
+    * upload them to cloudinary
+    * create user object - create entry in db
+    * now we get response from db (of what we have stored) so remove password and refresh token from response
+    * check for user creation - user create hua ki nhi and response empty hai ya kya
+    *return response
+now this is real world project logic building 
+form ya direct json data aa rha hai to usse hm req.body se access kr skte hai for url there is something other -- so we have done all this registration process in the user.controller.js 
+-------------------------lecture 15----------------------------------
+setting up postman for backend -- debugging the code 
+to setup postman create a collection add the post req to it for our url and provide field to it 
+we also add environment variable for the repeated part of url - http://localhost:8000/api/v1 part also share it to our collection thenwe can use it as {{variable_name}}/users/register like this
+ 
+
+
+
+
+

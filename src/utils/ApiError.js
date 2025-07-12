@@ -3,7 +3,7 @@ class ApiError extends Error {
         statusCode, 
         message = "Something went wrong",
         errors = [],
-        statck = "" //stack 
+        stack = "" //stack 
     ){
       //The Error base class needs the message so it can set its internal message property and build a stack trace.
       super(message);
@@ -20,8 +20,8 @@ class ApiError extends Error {
         // How your code got there (the path through your functions)
         // Think of it like:
         // 📸 A snapshot of all the functions that were called leading up to the error.
-      if (statck) {
-        this.stack = statck;
+      if (stack) {
+        this.stack = stack;
       } else {
         //captureStackTrace fn --
         //Tells JavaScript: “Hey, generate a clean stack trace starting from this function.”
