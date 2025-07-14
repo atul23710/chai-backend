@@ -77,7 +77,7 @@ userSchema.methods.isPasswordCorrect = async function (password) {
 //jwt is a bearer token, yaani jo isko bear krta hm usko true maan lete hai yaani jiske paas ye token hai mai usse data bhej dunga 
 //now we will generate some tokens using jwt.sign -- refresh token and access token 
 //also these function do not take much time to execute not too much cryptography but if need then we can use async await 
-userSchema.methods.generateAcessToken = function (){
+userSchema.methods.generateAccessToken = function (){
     return jwt.sign(
       {
         _id: this._id,

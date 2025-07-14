@@ -168,9 +168,348 @@ form ya direct json data aa rha hai to usse hm req.body se access kr skte hai fo
 setting up postman for backend -- debugging the code 
 to setup postman create a collection add the post req to it for our url and provide field to it 
 we also add environment variable for the repeated part of url - http://localhost:8000/api/v1 part also share it to our collection thenwe can use it as {{variable_name}}/users/register like this
- 
+ -----------------------------lecture 16-------------------------------
+ access token and refresh token -- access tokens are generally short lived and refresh tokens are long lived 
+        🧠 Imagine This First:
+        You’re visiting a building with security. The building has secure rooms. You walk in, show your ID, and they give you:
+        🪪 Access Card (access token) — opens doors to rooms for 15 minutes
 
+        🔁 VIP Pass (refresh token) — if your access card expires, show this at the front desk and get a new one without showing ID again
 
+        This is exactly how authentication with access and refresh tokens works in the backend.
 
+        🏛️ How Web Apps Work (without tokens)
+        You log in with username & password
 
+        Server verifies them, and marks you as "logged in" by:
+
+        Storing your login status on the server
+
+        Giving you a session ID (like a key)
+
+        But…
+
+        ❌ Problem:
+        Session-based systems store your state on the server — doesn't scale well with millions of users
+
+        Requires you to keep checking session status from a database
+
+        ✅ Token-based System (Stateless)
+        Now we use tokens, especially JWT (JSON Web Tokens):
+
+        A token is just a piece of text that contains proof you’re logged in
+
+        The server signs it to ensure it can’t be faked
+
+        The token contains user data like:
+
+        json
+        Copy
+        Edit
+        {
+        "userId": "123",
+        "role": "admin",
+        "exp": 168978123
+        }
+        🔐 Access Token — What is it?
+        It’s like a temporary pass saying:
+
+        “This person is verified. Allow them to access secure stuff for the next 15 minutes.”
+
+        Short lifespan (e.g., 15 min)
+
+        Sent by frontend with every protected API request
+
+        If it’s valid → backend allows access
+
+        If expired → ❌ backend says "Unauthorized"
+
+        🔄 Refresh Token — What is it?
+        It’s like a backup key saying:
+
+        “I am still who I say I am — please give me a new access token without logging in again.”
+
+        Long lifespan (e.g., 7 days or more)
+
+        Stored securely (usually in HTTP-only cookies)
+
+        Used only when the access token expires
+
+        If valid → backend gives you a new access token
+
+        ✅ Full Authentication Flow with Access & Refresh Tokens
+        1️⃣ Login
+        You send email & password → Backend verifies
+
+        Backend responds with:
+
+        ✅ accessToken (expires in 15 min)
+
+        🔁 refreshToken (expires in 7 days)
+
+        2️⃣ Accessing Protected APIs
+        Frontend calls:
+
+        http
+        Copy
+        Edit
+        GET /user/profile
+        Authorization: Bearer <accessToken>
+        Backend:
+
+        Checks if token is not expired
+
+        If valid → gives data
+
+        If expired → responds with 401 Unauthorized
+
+        3️⃣ Refreshing Token (No Login Again)
+        Frontend sees 401 Unauthorized, so it does:
+
+        http
+        Copy
+        Edit
+        POST /refresh-token
+        (with refreshToken from secure cookie)
+        Backend:
+
+        Verifies refresh token
+
+        If valid → creates a new access token
+
+        Frontend stores it and retries the original request
+
+        4️⃣ Logout
+        Frontend clears both tokens
+
+        Backend optionally blacklists the refresh token (for extra safety)
+
+        🧪 Let’s simulate this in plain English
+        Example:
+        You log in → receive:
+
+        accessToken: “valid for 15 min”
+
+        refreshToken: “valid for 7 days”
+
+        ⏱️ 10 minutes later:
+
+        You fetch profile → accessToken works
+
+        ⏱️ 20 minutes later:
+
+        You fetch again → accessToken expired
+
+        Your frontend sends the refreshToken → gets a new accessToken
+
+        You never had to log in again manually.
+
+        🧰 Why Not Just One Token?
+        If you only used access tokens:
+
+        You’d either expire them fast (secure) but annoy the user
+
+        Or keep them long-lived (convenient) but risky if stolen
+
+        Refresh tokens fix this tradeoff:
+
+        Access token = safe & short
+
+        Refresh token = safe backup (if stored securely)
+
+        🧱 3. Typical Auth Flow Using Access + Refresh Tokens
+        🧾 Step-by-step flow:
+        🟢 A. User Logs In
+        ✅ User sends credentials (email, password)
+
+        🔐 Server verifies them
+
+        ✅ Server generates:
+
+        Access Token (short-lived, e.g. 15min)
+
+        Refresh Token (long-lived, e.g. 7 days)
+
+        Server sends both tokens to the frontend
+
+        Access Token → usually stored in memory or cookie
+
+        Refresh Token → stored in HTTP-only cookie (safer from XSS)
+
+        🟡 B. User Accesses Protected Routes
+        🚀 Frontend sends access token in headers:
+
+        http
+        Copy
+        Edit
+        Authorization: Bearer <access_token>
+        ✅ Backend verifies token and responds
+
+        If token is valid:
+
+        🎉 Access granted
+
+        If token is expired:
+
+        ❌ Backend says: "Token expired"
+
+        🔁 C. Token Refresh (Auto re-login)
+        Frontend detects expired access token
+
+        It sends a request to /refresh-token endpoint
+
+        Server:
+
+        Validates refresh token
+
+        If valid → issues new access token (and optionally new refresh token)
+
+        Frontend stores new token, retries the original request
+
+        🔴 D. Logout
+        Frontend clears both tokens (memory, cookies)
+
+        Server can invalidate refresh token (e.g. blacklist in DB)
+
+        ⚙️ 4. How to implement this in Node.js (with JWT)
+        🛠 Generate Tokens
+        js
+        Copy
+        Edit
+        const jwt = require("jsonwebtoken");
+
+        const generateAccessToken = (user) => {
+        return jwt.sign(user, process.env.ACCESS_SECRET, { expiresIn: "15m" });
+        };
+
+        const generateRefreshToken = (user) => {
+        return jwt.sign(user, process.env.REFRESH_SECRET, { expiresIn: "7d" });
+        };
+        ✅ Login Route Example
+        js
+        Copy
+        Edit
+        app.post('/login', (req, res) => {
+        const user = { id: "123", role: "admin" }; // normally from DB
+
+        const accessToken = generateAccessToken(user);
+        const refreshToken = generateRefreshToken(user);
+
+        // Send access token in body
+        // Send refresh token in HTTP-only cookie
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: 'strict'
+        });
+
+        res.json({ accessToken });
+        });
+        🔒 Middleware to Protect Routes
+        js
+        Copy
+        Edit
+        function authenticateToken(req, res, next) {
+        const authHeader = req.headers['authorization'];
+        const token = authHeader && authHeader.split(' ')[1];
+
+        if (!token) return res.sendStatus(401);
+
+        jwt.verify(token, process.env.ACCESS_SECRET, (err, user) => {
+            if (err) return res.sendStatus(403); // token invalid
+            req.user = user;
+            next();
+        });
+        }
+        🔁 Refresh Token Endpoint
+        js
+        Copy
+        Edit
+        app.post('/refresh-token', (req, res) => {
+        const refreshToken = req.cookies.refreshToken;
+        if (!refreshToken) return res.sendStatus(401);
+
+        jwt.verify(refreshToken, process.env.REFRESH_SECRET, (err, user) => {
+            if (err) return res.sendStatus(403);
+
+            const newAccessToken = generateAccessToken({ id: user.id, role: user.role });
+            res.json({ accessToken: newAccessToken });
+        });
+        });
+        📦 Storage Suggestions
+        Token	Where to store	Why
+        Access Token	Memory, localStorage*, etc	Needed often, but short-lived
+        Refresh Token	HTTP-only cookie	Safer — cannot be accessed by JS
+
+        *localStorage is okay for learning/dev, but not safe in production
+
+now we will write the code for controller of login and logout in the same user.controller.js file 
+when writing the logout we also write a middleware auth.middleware.js -- we write this middleware coz we want to get the access of userid or other in the logout coz we dont have any way so what we will do is we will add a field user to the req and then from that we will take the value 
+that's why we use middleware ye req bhejne se phale usme add kr dega so we can use it in logout but ye hm middleware inject krte hai routes mei 
+we add routes for login and logout -- adding the middleware to it
+
+------------------------------lecture 17---------------------------------
+if you want to access the values in mongoDB then go the cluster and then to the collection
+debugging - phala access token ka naam glttha cookie mei to wo nikal nhi paa rha tha usse cookie se -- also i have swapped the name of access token and refresh token that's causing the error -- console log to check where the actual error happen
+now we are going to use the config the access token and the refresh token as we want to generate a access token and the refresh token which is stored in teh database(refreshToken) and login the user but once access token expires then the user become unauthorized and frontend throws a error that the session is expired but what we can do instead of showing a error we can do is say it hit an endpoint(API) where we check for the refersh token and if the refresh token we have(we send with the req) and in the database are same then we will generate a new access token and new refresh token, if refreshToken is not matched then we say user to login again -- this is what we are going to do 
+
+create functn refreshAccessToken in the user controller
+
+        🔐 What is jwt.verify()?
+        The jwt.verify() method is part of the jsonwebtoken package in Node.js.
+        It is used to verify the authenticity of a JSON Web Token (JWT).
+
+        ✅ Its Main Purpose:
+        Verify that the token is valid and hasn’t been tampered with.
+
+        Decode the payload inside the token.
+
+        Throw error if:
+
+        The token is expired
+
+        The signature is invalid
+
+        The token is malformed
+
+        Secret key doesn't match
+
+        ✅ Syntax
+        js
+        Copy
+        Edit
+        const decoded = jwt.verify(token, secretOrPublicKey);
+        You can also pass additional options or a callback, but let’s focus on the basic usage first.
+
+        🧠 What does it return?
+        It returns the decoded payload (the original data you embedded when the token was created using jwt.sign()).
+
+        Example:
+        Suppose you signed a token like this:
+
+        js
+        Copy
+        Edit
+        const token = jwt.sign(
+        { _id: "123", role: "admin" },  // <-- Payload
+        "mysecretkey",                  // <-- Secret
+        { expiresIn: "1h" }
+        );
+        Then, when you verify it:
+
+        js
+        Copy
+        Edit
+        const decoded = jwt.verify(token, "mysecretkey");
+        console.log(decoded);
+        Output:
+        js
+        Copy
+        Edit
+        {
+        _id: "123",
+        role: "admin",
+        iat: 1723452342,     // issued at (timestamp)
+        exp: 1723455942      // expiration time (timestamp)
+        }
 

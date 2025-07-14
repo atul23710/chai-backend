@@ -1,6 +1,7 @@
 import {Router} from "express"
-import { registerUser } from "../controllers/user.controller.js";
+import { loginUser, logoutUser, registerUser, refreshAccessToken } from "../controllers/user.controller.js";
 import { upload } from "../middleware/multer.middleware.js";
+import { verifyJWT } from "../middleware/auth.middleware.js";
 const router = Router()
 
 //ye hoga ki abb user/register pe registerUser ko call krdega 
@@ -21,5 +22,14 @@ router.route("/register").post(
     ]),
     registerUser
 )
+
+router.route("/login").post(loginUser)
+
+//secured routes -- jo ki login hone ke baad jo access krre
+//middleware ko user krne ke liye hm post mei multiple methods dete hia aur unn method mei dete hai next() ki abb next given method ko run kro -- jitne chahe utne middleware daal skte hai 
+router.route("/logout").post(verifyJWT, logoutUser)
+
+//for refreshing the tokens 
+router.route("/refresh-token").post(refreshAccessToken)
 
 export default router;
