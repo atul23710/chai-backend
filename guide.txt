@@ -152,10 +152,7 @@ we did importing and declaration of routes in app.js-- after this we write code 
 -----------------------------lecture 14---------------------------------
 logic building - register controller 
 now for registering user we have to do first build the logic and what we are going to do so first do that
-registering user - 
-    * get user details from frontend (although hmre project mei front end nhi hai but we will use postman for that)
-    * validation - simplest - not empty and other validations on input 
-    * check if user alreaady exists or not - via email, username (which on is unique can use that)
+check if user alreaady exists or not - via email, username (which on is unique can use that)
     * check for images, check for avatar
     * upload them to cloudinary
     * create user object - create entry in db
@@ -266,9 +263,6 @@ we also add environment variable for the repeated part of url - http://localhost
         3️⃣ Refreshing Token (No Login Again)
         Frontend sees 401 Unauthorized, so it does:
 
-        http
-        Copy
-        Edit
         POST /refresh-token
         (with refreshToken from secure cookie)
         Backend:
@@ -475,9 +469,6 @@ create functn refreshAccessToken in the user controller
         Secret key doesn't match
 
         ✅ Syntax
-        js
-        Copy
-        Edit
         const decoded = jwt.verify(token, secretOrPublicKey);
         You can also pass additional options or a callback, but let’s focus on the basic usage first.
 
@@ -512,4 +503,30 @@ create functn refreshAccessToken in the user controller
         iat: 1723452342,     // issued at (timestamp)
         exp: 1723455942      // expiration time (timestamp)
         }
+
+---------------------------lecture 18-----------------------------------
+we are going to add the subscription model to the models -- in subscription we have refrence of two users one is subscriber and one is channel owner both of them are user 
+and we are going to create a update controller 
+
+so first creating the subscription model 
+now write some controllers -- changeCurrentPassword,getCurrentUser,updateAccountDetails,updateUserAvatar,updateUserCoverImage.
+
+---------------------------lecture 19---------------------------------
+now on when we open the profile or page so we want to show the user's - coverimg, avatar, username, fullname but also we have to add total subscribed, and total subscriber and have to show the button subscribed/subscribe 
+why don't we just added a array of subscriber and all in the model itself coz first it will be a very large data and if we have to delete one value its very expensive operation so that's not the option 
+---------------------------lecture 20----------------------------------
+getCurrentUserProfile - we will use agggreate pipeline here we have to show the first of all teh subscription data like the subscribed and subsciber and add them to the values from the user. 
+now we do this in the controller - 
+----------------------------lecture 21---------------------------------
+controller for watchHistory and that also uses aggregate pipeline
+we have watchHistory array with videos in it -- we have to do nestedlookup here for the watchHistory -- why nestedlookup coz first we lookup in watchhistory and we get the array of videos so we get multiple documents of video in the watchHistory but the video's document itself have a owner which is in return a user so if we want to show the owner then we have to again lookup for the owner 
+
+
+
+
+
+
+
+
+
 

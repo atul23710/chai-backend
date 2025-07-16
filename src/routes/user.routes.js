@@ -32,4 +32,22 @@ router.route("/logout").post(verifyJWT, logoutUser)
 //for refreshing the tokens 
 router.route("/refresh-token").post(refreshAccessToken)
 
+router.route("/change-password").post(verifyJWT, changeCurrentPassword);
+router.route("/current-user").get(verifyJWT, getCurrentUser);
+
+//patch rhkhna hai yha pr requestko 
+router.route("/update-account").patch(verifyJWT, updateAccountDetails);
+
+router
+  .route("/avatar")
+  .patch(verifyJWT, upload.single("avatar"), updateUserAvatar);
+router
+  .route("/cover-image")
+  .patch(verifyJWT, upload.single("coverImage"), updateUserCoverImage);
+
+  //to get params we have used :/username coz we have used this name in the func so must be same
+
+router.route("/c/:username").get(verifyJWT, getCurrentUserProfile);
+router.route("/history").get(verifyJWT, getWatchHistory);
+
 export default router;
